@@ -2,10 +2,12 @@ import hugging_face as hf
 import google.generativeai as genai
 import os 
 import imgInput as imgI
+import img2txt as sd
 import pyttsx3
 import speech_recognition as sr
 import streamlit as st
 from dotenv import *
+
 load_dotenv(find_dotenv())
 
 #voice command
@@ -44,7 +46,7 @@ def geminiRes(text):
     genai.configure(api_key=os.environ["GEMINI_API_KEY"])
     model = genai.GenerativeModel('gemini-pro')
 
-    response = model.generate_content("explain in brief" + text)
+    response = model.generate_content(text)
     print(response.text)
     return response.text
 
@@ -71,11 +73,16 @@ def voiceCommand():
             speak(hf.Img2Text("img.png"))
         elif 'who is this person' in query:
             print("Face Recognition")
-        else :
-            print("Gemini")
-            speak(geminiRes(query))
+        elif 'scan document' in query:
+            test = sd.scan_document()
+            text = geminiRes("Could you please explain the main points or key information contained in the document give response such that it can be used as a voice assistant response " + test)
+            text = text.replace("*", " ")
+            print(text)
+            speak(text)
+
+        # else:
+        #     speak(geminiRes(query))
+        
+        
             
-            # print(query)
-
-
-
+            
